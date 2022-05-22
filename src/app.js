@@ -3,6 +3,8 @@ const express = require('express');
 const spotifywebapi = require('spotify-web-api-node');
 const cors = require('cors');
 const app = express();
+const router = express.Router();
+const serverless = require('serverless-http');
 app.use(express.json());
 app.use(cors());
 const spotify = new spotifywebapi({
@@ -12,7 +14,7 @@ const spotify = new spotifywebapi({
 });
 let accessToken;
 
-app.post('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   const code = req.body.code;
 
   await spotify
@@ -35,7 +37,7 @@ app.post('/login', async (req, res) => {
   spotify.setAccessToken(accessToken);
 });
 
-app.post('/refresh', (req, res) => {
+router.post('/refresh', (req, res) => {
   const refreshToken = req.body.refreshToken;
   const spotifyApi = new spotifywebapi({
     redirectUri: process.env.REDIRECT_LINK,
@@ -64,7 +66,10 @@ async function searchArtist(artist) {
   console.log(albums.body.items);
   return albums.body.items;
 }
-app.post('/', (req, res) => {
+router.post('/', (req, res) => {
   req.body.search.forEach(item => searchArtist(item));
 });
-app.listen(3001, console.log('listening on port 3001'));
+// app.listen(3001, console.log('listening on port 3001'));
+app.use(`/.netlify/functions/api`, router);
+module.exports = app;
+module.exports.handler = serverless(app);
