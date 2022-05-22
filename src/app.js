@@ -14,7 +14,7 @@ const spotify = new spotifywebapi({
 });
 let accessToken;
 
-router.post('/login', async (req, res) => {
+app.post('/login', async (req, res) => {
   const code = req.body.code;
 
   await spotify
@@ -37,7 +37,7 @@ router.post('/login', async (req, res) => {
   spotify.setAccessToken(accessToken);
 });
 
-router.post('/refresh', (req, res) => {
+app.post('/refresh', (req, res) => {
   const refreshToken = req.body.refreshToken;
   const spotifyApi = new spotifywebapi({
     redirectUri: process.env.REDIRECT_LINK,
@@ -66,10 +66,10 @@ async function searchArtist(artist) {
   console.log(albums.body.items);
   return albums.body.items;
 }
-router.post('/', (req, res) => {
+app.post('/', (req, res) => {
   req.body.search.forEach(item => searchArtist(item));
 });
 // app.listen(3001, console.log('listening on port 3001'));
-app.use(`/.netlify/functions/api`, router);
+app.listen(`https://spotify-server.netlify.app/.netlify/functions/app`);
 module.exports = app;
 module.exports.handler = serverless(app);
