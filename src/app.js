@@ -70,6 +70,6 @@ app.post('/', (req, res) => {
   req.body.search.forEach(item => searchArtist(item));
 });
 // app.listen(3001, console.log('listening on port 3001'));
-app.listen(process.env.PORT || 5000);
+app.listen(process.env.PORT || 3001);
 // module.exports = app;
 // module.exports.handler = serverless(app);
